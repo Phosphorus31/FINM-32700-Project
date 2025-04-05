@@ -29,3 +29,23 @@ void multiply_mv_col_major(const double* matrix, int rows, int cols,
         }
     }
 }
+
+void multiply_mm_naive(const double* matrixA, int rowsA, int colsA,
+                       const double* matrixB, int rowsB, int colsB,
+                       double* result) {
+    // TODO: error handling
+
+    for (int i = 0; i < rowsA * colsB; ++i) {
+        result[i] = 0.0;
+    }
+
+    for (int i = 0; i < rowsA; ++i) {
+        for (int j = 0; j < colsB; ++j) {
+            double sum = 0.0;
+            for (int k = 0; k < colsA; ++k) {
+                sum += matrixA[i * colsA + k] * matrixB[k * colsB + j];
+            }
+            result[i * colsB + j] = sum;
+        }
+    }
+    }

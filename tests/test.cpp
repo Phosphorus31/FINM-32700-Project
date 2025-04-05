@@ -35,6 +35,25 @@ int main() {
         // return 1;
     }
 
+    const int rowsA = 2, colsA = 3;
+    const int rowsB = 3, colsB = 2;
+
+    double A[] = {1, 2, 3, 4, 5, 6};
+    double B[] = {7, 8, 9, 10, 11, 12};
+    double C[4];
+
+    multiply_mm_naive(A, rowsA, colsA, B, rowsB, colsB, C);
+
+    bool pass = C[0] == 58.0 && C[1] == 64.0 && C[2] == 139.0 && C[3] == 154.0;
+
+    if (pass) {
+        std::cout << "Matrix-Matrix Naive test passed\n";
+        // return 0;
+    } else {
+        std::cout << "Matrix-Matrix Naive test failed\n";
+        // return 1;
+    }
+
     return 0;
 
 }
