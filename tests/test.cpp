@@ -54,6 +54,24 @@ int main() {
         // return 1;
     }
 
-    return 0;
+    const int rowsA_2 = 2, colsA_2 = 3;
+    const int rowsB_2 = 3, colsB_2 = 2;
 
+    double A_2[] = {1, 2, 3, 4, 5, 6};              // row-major
+    double B_transposed[] = {7, 9, 11, 8, 10, 12};  // 2x3, row-major
+
+    multiply_mm_transposed_b(A_2, rowsA_2, colsA_2, B_transposed, rowsB_2,
+                             colsB_2, C);
+
+    bool pass_2 =
+        C[0] == 58.0 && C[1] == 64.0 && C[2] == 139.0 && C[3] == 154.0;
+
+    if (pass_2) {
+        std::cout << "Matrix-Matrix (Transposed B) test passed\n";
+    return 0;
+    } else {
+        std::cout << "Matrix-Matrix (Transposed B) test failed\n";
+        return 1;
+    }
 }
+
