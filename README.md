@@ -51,4 +51,30 @@ Indeed, in the benchmarking results, we see that
 
 > 3. Describe how CPU caches work (L1, L2, L3) and explain the concepts of temporal and spatial locality. How did you try to exploit these concepts in your optimizations?
 
-TODO.
+Modern CPUs use a hierarchy of caches, L1, L2, and L3, to speed up memory access. The L1 cache is the smallest and fastest, located closest to the CPU core, followed by the larger but slower L2, and then the even larger and slower shared L3 cache. These caches store recently accessed data to avoid the expensive latency of fetching from main memory. Spatial locality refers to the tendency of a program to access memory locations that are close to one another, while temporal locality refers to reusing the same memory location within a short time frame.
+
+In our optimizations, we exploited spatial locality by accessing matrix rows or columns sequentially in memory as they are stored contiguously, ensuring that when a cache line is loaded, multiple elements can be accessed before it’s evicted. For example, in `multiply_mv_row_major`, we iterate through matrix rows contiguously in memory, which fits well with row-major layout. In `multiply_mv_col_major`, we similarly iterate through rows contiguously and we also reuse the same vector component throughout the computation, exploiting temporal locality as well.
+
+In `multiply_mm_transposed_b`, we explicitly transposed B to convert otherwise scattered column-wise access into sequential row-wise access, again boosting spatial locality and cache hit rates. These changes significantly reduced cache misses and improved performance, especially on larger matrices that stress the cache hierarchy.
+
+> 4. What is memory alignment, and why is it important for performance? Did you observe a significant performance difference between aligned and unaligned memory in your experiments? Explain your findings.
+
+Memory alignment refers to the practice of arranging data in memory at addresses that are multiples of a word size (e.g., 8 or 16 bytes). Proper alignment ensures that data can be accessed in the fewest possible memory operations, often allowing the CPU to use optimized instructions like SIMD (Single Instruction, Multiple Data). When data is unaligned, the CPU may need to perform extra reads, combine multiple memory accesses, or even issue penalties like pipeline stalls, all of which degrade performance.
+
+TODO: experiments and more details.
+
+> 5. Discuss the role of compiler optimizations (like inlining) in achieving high performance. How did the optimization level affect the performance of your baseline and optimized implementations? What are the potential drawbacks of aggressive optimization?
+
+Compiler optimizations play a crucial role in achieving high performance in numerical code. Optimizations such as function inlining, loop unrolling, vectorization, and dead code elimination can significantly reduce overhead and improve instruction-level parallelism. Inlining small, frequently-called functions (like our multiplication routines) removes the overhead of function calls and enables the compiler to further optimize across function boundaries, such as reordering or fusing loops.
+
+TODO: more experimentation.
+
+However, aggressive optimizations can have drawbacks. They can make debugging harder, since the optimized binary may not match the original source code's flow. Some optimizations can lead to numerical instability (e.g., reordering floating-point operations), and overly aggressive inlining or unrolling might increase binary size or cause instruction cache thrashing. Despite these trade-offs, enabling high-level optimizations is essential for maximizing performance in computational kernels like ours.
+
+> 6. Based on your profiling experience, what were the main performance bottlenecks in your initial implementations? How did your profiling results guide your optimization efforts?
+
+TODO
+
+> 7. Reflect on the teamwork aspect of this assignment. How did dividing the initial implementation tasks and then collaborating on analysis and optimization work? What were the challenges and benefits of this approach?
+
+I guess this is not the most applicable since I'm working alone... In other news, I would have appreciated this project being more guided on the parts that we did not yet cover, such as memory alignment. 
