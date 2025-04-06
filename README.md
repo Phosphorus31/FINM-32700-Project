@@ -120,7 +120,25 @@ However, we note that aggressive optimizations can have drawbacks. They can make
 
 > 6. Based on your profiling experience, what were the main performance bottlenecks in your initial implementations? How did your profiling results guide your optimization efforts?
 
-TODO
+From profiling different benchmarks involving `multiply_mm_naive` and `multiply_mm_transposed_b`, we can see that indeed the most time have been spent on the lines
+
+```
+sum += matrixA[i * colsA + k] * matrixB[k * colsB + j];
+```
+
+and
+
+```
+matrixA[i * colsA + k] * matrixB_transposed[j * rowsB + k];
+```
+
+respectively. This is when the computer needs to retrieve the data and is where the most benefit is derived from more frequent cache hits via optimizations in locality.
+
+Images of the profiler output are included for reference:
+
+![naive](/images/Screenshot%202025-04-05%20at%2023.44.21.png)
+
+![tranposed](/images/Screenshot%202025-04-05%20at%2023.51.03.png)
 
 > 7. Reflect on the teamwork aspect of this assignment. How did dividing the initial implementation tasks and then collaborating on analysis and optimization work? What were the challenges and benefits of this approach?
 
