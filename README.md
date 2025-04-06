@@ -59,9 +59,16 @@ In `multiply_mm_transposed_b`, we explicitly transposed B to convert otherwise s
 
 > 4. What is memory alignment, and why is it important for performance? Did you observe a significant performance difference between aligned and unaligned memory in your experiments? Explain your findings.
 
-Memory alignment refers to the practice of arranging data in memory at addresses that are multiples of a word size (e.g., 8 or 16 bytes). Proper alignment ensures that data can be accessed in the fewest possible memory operations, often allowing the CPU to use optimized instructions like SIMD (Single Instruction, Multiple Data). When data is unaligned, the CPU may need to perform extra reads, combine multiple memory accesses, or even issue penalties like pipeline stalls, all of which degrade performance.
+Memory alignment refers to the practice of arranging data in memory at addresses that are multiples of a word size (e.g., 8 or 16 bytes). Proper alignment ensures that data can be accessed in the fewest possible memory operations, often allowing the CPU to use optimized instructions like Single Instruction, Multiple Data (SIMD). When data is unaligned, the CPU may need to perform extra reads, combine multiple memory accesses, or even issue penalties like pipeline stalls, all of which degrade performance.
 
-TODO: experiments and more details.
+We experimented with aligning memory and compared the performance of `multiply_mv_row_major`. Surprisingly, we found no significant difference between the two. It is likely the case that the standard `std::vector` typically provides sufficiently aligned memory for our computations. That, or I'm doing something completely wrong. I cannot say for sure. If we had to perform heavy SIMD vectorization or used non-standard data layouts, explicit alignment can yield more measurable performance improvements.
+
+| Matrix Size | unaligned (ms) | aligned (ms) |
+| ----------- | -------------- | ------------ |
+| 256×256     | 0 ± 0          | 0 ± 0        |
+| 1024×1024   | 3.6 ± 0.49     | 3 ± 0        |
+| 4096×4096   | 57.5 ± 0.67    | 58.5 ± 1.4   |
+| 16384×16384 | 924.7 ± 3.2    | 980 ± 150    |
 
 > 5. Discuss the role of compiler optimizations (like inlining) in achieving high performance. How did the optimization level affect the performance of your baseline and optimized implementations? What are the potential drawbacks of aggressive optimization?
 
