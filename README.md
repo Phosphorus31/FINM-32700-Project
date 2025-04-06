@@ -12,7 +12,7 @@ This repository hosts the course project for FINM 32700 *Advanced Computing for 
 
 TODO.
 
-## Discussion Questions
+## Discussion Questions / Report Contents
 
 > 1. Explain the key differences between pointers and references in C++. When would you choose to use a pointer over a reference, and vice versa, in the context of implementing numerical algorithms?
 
@@ -70,13 +70,53 @@ We experimented with aligning memory and compared the performance of `multiply_m
 | 4096×4096   | 57.5 ± 0.67    | 58.5 ± 1.4   |
 | 16384×16384 | 924.7 ± 3.2    | 980 ± 150    |
 
+<!-- TODO: perhaps compare other functions -->
+
 > 5. Discuss the role of compiler optimizations (like inlining) in achieving high performance. How did the optimization level affect the performance of your baseline and optimized implementations? What are the potential drawbacks of aggressive optimization?
 
-Compiler optimizations play a crucial role in achieving high performance in numerical code. Optimizations such as function inlining, loop unrolling, vectorization, and dead code elimination can significantly reduce overhead and improve instruction-level parallelism. Inlining small, frequently-called functions (like our multiplication routines) removes the overhead of function calls and enables the compiler to further optimize across function boundaries, such as reordering or fusing loops.
+Compiler optimizations can play a crucial role in achieving high performance in numerical code. Optimizations such as function inlining, loop unrolling, vectorization, and dead code elimination can significantly reduce overhead and improve instruction-level parallelism. Inlining small, frequently-called functions (like our multiplication routines) removes the overhead of function calls and enables the compiler to further optimize across function boundaries, such as reordering or fusing loops.
 
-TODO: more experimentation.
+We pass the `-O3` flag and compare to the previous performance with no compiler optimization (`-O0`).
 
-However, aggressive optimizations can have drawbacks. They can make debugging harder, since the optimized binary may not match the original source code's flow. Some optimizations can lead to numerical instability (e.g., reordering floating-point operations), and overly aggressive inlining or unrolling might increase binary size or cause instruction cache thrashing. Despite these trade-offs, enabling high-level optimizations is essential for maximizing performance in computational kernels like ours.
+For `multiply_mv_row_major`:
+
+| Matrix Size | `-O0` (ms)  | `-O3` (ms)  |
+| ----------- | ----------- | ----------- |
+| 256×256     | 0 ± 0       | 0 ± 0       |
+| 1024×1024   | 3.6 ± 0.49  | 0.1 ± 0.3   |
+| 4096×4096   | 57.5 ± 0.67 | 15.2 ± 0.4  |
+| 16384×16384 | 924.7 ± 3.2 | 251.6 ± 1.5 |
+
+For `multiply_mv_col_major`:
+
+| Matrix Size | `-O0` (ms) | `-O3` (ms) |
+| ----------- | ---------- | ---------- |
+| 256×256     | 0 ± 0      | 0 ± 0      |
+| 1024×1024   | 1 ± 0      | 0 ± 0      |
+| 4096×4096   | 25.2 ± 0.4 | 2 ± 0      |
+| 16384×16384 | 439.3 ± 14 | 65.6 ± 9.7 |
+
+Despite the heavy compiler optimizations, our more localization optimized versions still retain its advantage.
+
+For `multiply_mm_naive`:
+
+| Matrix Size | `-O0` (ms) | `-O3` (ms) |
+| ----------- | ---------- | ---------- |
+| 64×64       | 0 ± 0      | 0 ± 0      |
+| 256×256     | 56.1 ± 0.3 | 15.1 ± 0.3 |
+| 1024×1024   | 5700 ± 110 | 1501 ± 57  |
+
+For `multiply_mm_transposed_b`:
+
+| Matrix Size | `-O0` (ms) | `-O3` (ms)   |
+| ----------- | ---------- | ------------ |
+| 64×64       | 0 ± 0      | 0 ± 0        |
+| 256×256     | 55.9 ± 0.3 | 8 ± 0        |
+| 1024×1024   | 3714 ± 22  | 919.2 ± 31.6 |
+
+Similarly, our more localization optimized versions still retain its advantage despite heavy compiler optimizations.
+
+However, we note that aggressive optimizations can have drawbacks. They can make debugging harder, since the optimized binary may not match the original source code's flow. Some optimizations can lead to numerical instability (e.g., reordering floating-point operations), and overly aggressive inlining or unrolling might increase binary size or cause instruction cache thrashing. Despite these trade-offs, enabling high-level optimizations is essential for maximizing performance in computational kernels like ours.
 
 > 6. Based on your profiling experience, what were the main performance bottlenecks in your initial implementations? How did your profiling results guide your optimization efforts?
 
@@ -84,4 +124,4 @@ TODO
 
 > 7. Reflect on the teamwork aspect of this assignment. How did dividing the initial implementation tasks and then collaborating on analysis and optimization work? What were the challenges and benefits of this approach?
 
-I guess this is not the most applicable since I'm working alone... In other news, I would have appreciated this project being more guided on the parts that we did not yet cover, such as memory alignment. 
+I guess this is not the most applicable since I'm working alone... In other news, I would have appreciated this project being more guided on the parts that we did not yet cover, such as memory alignment.
